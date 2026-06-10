@@ -331,7 +331,7 @@ section h2 {
 
 #education .card-list,
 #cubing .card-list {
-  gap: 0;
+  gap: 0.75rem;
 }
 
 #education .card-content,
@@ -496,7 +496,7 @@ section h2 {
 .projects-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .project-item-new {

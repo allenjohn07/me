@@ -163,7 +163,7 @@ export const DATA = {
     {
       title: "OhShift",
       subtitle: "Shifting Platform",
-      href: "https://ohshift.vercel.app/",
+      href: "https://allenjohn07.github.io/OhShift/",
       dates: "March 2026 - Present",
       active: true,
       description:
