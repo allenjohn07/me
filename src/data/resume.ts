@@ -1,51 +1,76 @@
 export const DATA = {
   name: "Allen John",
   url: "https://allenjohn.me",
-  description: "Full stack developer, Speedcuber",
-  summary:
-    "I'm an aspiring software developer currently living in Calgary and studying Software Development at SAIT. \n\nI have a degree in Computer Applications, took a detour into video editing for a bit, and eventually found my way back to programming. Turns out I actually enjoy it when I give it a proper chance. I did a MERN stack course back in India, which got me serious about web development, and that led me to coming to Canada for further studies. Still learning, still figuring things out, but I pick things up pretty quickly once something interests me. With AI changing how software is built, I'm trying to focus on problem-solving and system thinking rather than just writing code.",
+  description: "Self-taught Full stack developer, Speedcuber",
+  summary: [
+    "I'm an aspiring software developer currently living in Calgary.",
+    "I love experimenting with new technologies and building things.",
+    "I can solve a Rubik's cube in 10 seconds.",
+  ].join("\n\n"),
   skills: [
     {
       category: "Frontend",
-      items: [
-        "Next.js (App Router)",
-        "React 19",
-        "TypeScript",
-        "Tailwind CSS",
-        "Shadcn/ui",
-        "Framer Motion",
-        "TanStack Query",
-        "Zod",
-        "Playwright (E2E)",
+      groups: [
+        {
+          label: "Core",
+          items: [
+            "React 19",
+            "Next.js (App Router)",
+            "TypeScript",
+            "Tailwind CSS",
+          ],
+        },
+        {
+          label: "UI & Animation",
+          items: ["Shadcn/ui", "Framer Motion"],
+        },
+        {
+          label: "State & Validation",
+          items: ["TanStack Query", "Zod"],
+        },
+        {
+          label: "Testing",
+          items: ["Playwright (E2E)"],
+        },
       ],
     },
     {
       category: "Backend & Database",
-      items: [
-        "Node.js",
-        "Express",
-        "Prisma",
-        "PostgreSQL",
-        "MongoDB",
-        "Redis (Caching)",
-        "Supabase",
-        "Amazon S3",
-        "Clerk (Auth)",
-        "RESTful APIs",
-        "Webhooks",
-        "GraphQL",
+      groups: [
+        {
+          label: "Server & APIs",
+          items: [
+            "Node.js",
+            "Express",
+            "RESTful APIs",
+            "Webhooks",
+            "GraphQL",
+          ],
+        },
+        {
+          label: "Database & ORM",
+          items: ["PostgreSQL", "MongoDB", "Prisma", "Supabase"],
+        },
+        {
+          label: "Auth & Infrastructure",
+          items: ["Clerk", "Amazon S3", "Redis (Caching)"],
+        },
       ],
     },
     {
-      category: "Tools & DevOps",
-      items: [
-        "Git",
-        "GitHub",
-        "Docker",
-        "Vercel",
-        "CI/CD (GitHub Actions)",
-        "Sentry",
-        "Postman",
+      category: "DevOps & Tools",
+      groups: [
+        {
+          items: [
+            "Git",
+            "GitHub",
+            "Docker",
+            "Vercel",
+            "GitHub Actions (CI/CD)",
+            "Sentry",
+            "Postman",
+          ],
+        },
       ],
     },
   ],
@@ -62,17 +87,15 @@ export const DATA = {
   education: [
     {
       school: "Southern Alberta Institute of Technology",
-      url: "https://www.sait.ca/",
       degree: "Diploma in Software Development",
-      start: "2025",
-      end: "2026",
+      start: "May 2025",
+      end: "December 2026",
     },
     {
       school: "Mahatma Gandhi University",
-      url: "https://www.mgu.ac.in/",
       degree: "Bachelor of Science in Computer Application",
-      start: "2019",
-      end: "2022",
+      start: "June 2019",
+      end: "May 2022",
     },
   ],
   projects: [
@@ -80,10 +103,10 @@ export const DATA = {
       title: "Cubing Kerala",
       subtitle: "",
       href: "https://cubingkerala.org/",
-      dates: "August 2024 - Present",
+      dates: "July 2024 - Present",
       active: true,
       description:
-        "A platform for the Kerala cubing community to track competitions and rankings. Originally built with React and Node, I rebuilt it from scratch with Next.js and TypeScript for better performance. It integrates with the World Cube Association's APIs and authentication to keep competition data up to date.",
+        "A platform for the Kerala cubing community to track competitions and rankings. Built with Next.js and TypeScript for better performance. It integrates with the World Cube Association's APIs and authentication to keep user and competition data up to date.",
       technologies: [
         "Next.js",
         "TypeScript",
@@ -104,16 +127,15 @@ export const DATA = {
           icon: "github",
         },
       ],
-      image: "/cubingkerala.png",
     },
     {
       title: "SpeedCubers India",
-      subtitle: "In progress",
+      subtitle: "",
       href: "https://speedcubersindia.com/",
-      dates: "March 2025 - Present",
+      dates: "August 2024 - Present",
       active: true,
       description:
-        "Building the web platform for SpeedCubers India as part of a small team. I handle most of the frontend and chip in on the backend. The app features national rankings for Indian cubers and a live competition feed. We're working towards launch and WCA regional recognition.",
+        "SpeedCubers India is now an officially recognized WCA regional organization in India. It's a platform for the Indian cubing community to track national rankings and live competition updates. I work on the web platform in a small team, directly under a WCA board member and a software engineer at Google. We are working on bringing the ranking system and other features to life in the near future.",
       technologies: [
         "Next.js",
         "TypeScript",
@@ -137,7 +159,6 @@ export const DATA = {
           icon: "github",
         },
       ],
-      image: "/sci.png",
     },
     {
       title: "OhShift",
@@ -146,19 +167,22 @@ export const DATA = {
       dates: "March 2026 - Present",
       active: true,
       description:
-        "A shifting platform where companies can register, invite employees, and assign shifts with automated email notifications. Built to streamline workforce management for small businesses.",
+        "A modern shift management platform designed to streamline workforce scheduling for small businesses. The application features a decoupled, ultra-fast architecture: a type-safe Next.js and TypeScript frontend optimized as a static export and hosted on GitHub Pages, paired with a high-performance backend API built using Bun, Elysia, and Prisma. It leverages Neon for a serverless PostgreSQL database and automates real-time shift alerts via email notifications.",
       technologies: [
         "Next.js",
         "TypeScript",
-        "Supabase",
-        "Nodemailer",
+        "Bun",
+        "Elysia",
+        "Prisma",
+        "Neon",
+        "Brevo",
         "Tailwind",
         "Shadcn UI",
       ],
       links: [
         {
           type: "Website",
-          href: "https://ohshift.vercel.app/",
+          href: "https://allenjohn07.github.io/OhShift/",
           icon: "globe",
         },
         {
@@ -167,7 +191,6 @@ export const DATA = {
           icon: "github",
         },
       ],
-      image: "/OhShift.png",
     },
   ],
   cubing: [
@@ -175,21 +198,21 @@ export const DATA = {
       organization: "World Cube Association",
       url: "https://www.worldcubeassociation.org/persons/2017JOHN14",
       title: "Speedcuber and Organizer",
-      start: "2017",
+      start: "July 2017",
       end: "Present",
     },
     {
       organization: "Cubing Kerala",
       url: "https://cubingkerala.org/",
       title: "Core Member and Website Creator/Maintainer",
-      start: "2017",
+      start: "July 2017",
       end: "Present",
     },
     {
       organization: "SpeedCubers India",
       url: "https://speedcubersindia.com/",
       title: "Frontend Lead",
-      start: "2023",
+      start: "August 2024",
       end: "Present",
     },
   ],

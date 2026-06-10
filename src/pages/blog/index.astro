@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import Badge from '@/components/Badge.astro';
 import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
@@ -31,9 +32,9 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
               </p>
               <p class="blog-desc">{post.data.description}</p>
               {post.data.tags.length > 0 && (
-                <div class="blog-tags">
+                <div class="badge-list blog-tags">
                   {post.data.tags.map((tag) => (
-                    <span class="project-tag">{tag}</span>
+                    <Badge label={tag} />
                   ))}
                 </div>
               )}

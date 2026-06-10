@@ -33,6 +33,3 @@ I don’t believe AI will replace software developers, but it will certainly thi
 This shift is pushing me to look beyond just syntax. I'm focusing more on system design and the logic of problem-solving. AI will help us build, but humans will still be the ones defining the solution.
 
 My journey has been a series of pivots, but they’ve all led me here. I’m curious to see what will catch my interest next.
-
-
-**N.B:** I'm not a good writer, so I’ve used AI to enhance the fluency and clarity of my original thoughts.

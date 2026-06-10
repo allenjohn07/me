@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import Badge from '@/components/Badge.astro';
 import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -31,9 +32,9 @@ const { Content } = await post.render();
             })}
           </p>
           {post.data.tags.length > 0 && (
-            <div class="blog-tags" style="margin-top: 0.75rem">
+            <div class="badge-list blog-tags" style="margin-top: 0.75rem">
               {post.data.tags.map((tag) => (
-                <span class="project-tag">{tag}</span>
+                <Badge label={tag} />
               ))}
             </div>
           )}
