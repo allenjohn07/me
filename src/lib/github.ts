@@ -1,5 +1,6 @@
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { loadEnv } from 'vite';
 import { DATA } from '@/data/resume';
 
 const GRAPHQL_URL = 'https://api.github.com/graphql';
@@ -7,6 +8,9 @@ const REST_URL = 'https://api.github.com';
 const FALLBACK_CONTRIBUTIONS_URL = 'https://github-contributions-api.jogruber.de/v4';
 const FETCH_TIMEOUT_MS = 10_000;
 const USER_AGENT = 'allenjohn-portfolio';
+const CACHE_TTL_MS = 10 * 60 * 1000;
+const RATE_LIMIT_COOLDOWN_MS = 5 * 60 * 1000;
+const CACHE_PATH = join(process.cwd(), '.cache', 'github.json');
 
 const LEVEL_FROM_GITHUB = {
   NONE: 0,
@@ -51,8 +55,12 @@ export type FeaturedRepo = {
   url: string;
   homepage: string | null;
   stars: number;
+  forks: number;
   language: string | null;
   updatedAt: string;
+  iconUrl: string;
+  iconUrlDark: string | null;
+  activity: number[];
 };
 
 export type GitHubPageData = {
@@ -104,14 +112,92 @@ type RestRepo = {
   html_url?: string;
   homepage?: string | null;
   stargazers_count?: number;
+  forks_count?: number;
   language?: string | null;
   pushed_at?: string;
   message?: string;
+  owner?: {
+    login?: string;
+    avatar_url?: string;
+  };
 };
 
+type CachedPage = {
+  savedAt: number;
+  data: GitHubPageData;
+};
+
+let memoryCache: CachedPage | null = null;
+let skipGithubUntil = 0;
+let tokenWarned = false;
+
 function githubToken(): string | undefined {
-  const token = process.env['GITHUB_TOKEN'];
-  return token && token.length > 0 ? token : undefined;
+  const fromProcess = process.env['GITHUB_TOKEN'];
+  const fromVite = (import.meta.env as Record<string, string | undefined>)['GITHUB_TOKEN'];
+  if (fromProcess && fromProcess.length > 0) return fromProcess;
+  if (fromVite && fromVite.length > 0) return fromVite;
+
+  const loaded = loadEnv(import.meta.env.MODE ?? 'development', process.cwd(), '');
+  const fromFile = loaded['GITHUB_TOKEN'];
+  if (fromFile && fromFile.length > 0) {
+    process.env['GITHUB_TOKEN'] = fromFile;
+    return fromFile;
+  }
+
+  if (!tokenWarned) {
+    tokenWarned = true;
+    console.warn(
+      'GITHUB_TOKEN is missing. GitHub REST is limited to 60 unauthenticated requests/hour; add it to .env for local dev.',
+    );
+  }
+  return undefined;
+}
+
+function githubUnavailable(): boolean {
+  return Date.now() < skipGithubUntil;
+}
+
+function warn(message: string, error?: unknown) {
+  const detail = error instanceof Error ? error.message : error;
+  console.warn(detail ? `${message} ${detail}` : message);
+}
+
+function readDiskCache(): CachedPage | null {
+  try {
+    if (!existsSync(CACHE_PATH)) return null;
+    const parsed = JSON.parse(readFileSync(CACHE_PATH, 'utf8')) as CachedPage;
+    if (!parsed?.data || typeof parsed.savedAt !== 'number') return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeDiskCache(data: GitHubPageData) {
+  try {
+    mkdirSync(dirname(CACHE_PATH), { recursive: true });
+    const entry: CachedPage = { savedAt: Date.now(), data };
+    writeFileSync(CACHE_PATH, JSON.stringify(entry));
+    memoryCache = entry;
+  } catch {
+    memoryCache = { savedAt: Date.now(), data };
+  }
+}
+
+function cachedPage(allowStale = false): GitHubPageData | null {
+  const hit = memoryCache ?? readDiskCache();
+  if (!hit) return null;
+  memoryCache = hit;
+  if (allowStale || Date.now() - hit.savedAt < CACHE_TTL_MS) return hit.data;
+  return null;
+}
+
+function isDegraded(data: GitHubPageData): boolean {
+  return (
+    data.user.publicRepos === 0 &&
+    data.calendar.source === 'empty' &&
+    data.repos.every((repo) => repo.stars === 0 && repo.activity.length === 0)
+  );
 }
 
 function headers(withJson = false): HeadersInit {
@@ -130,6 +216,10 @@ async function fetchJson<T>(url: string, init: RequestInit = {}): Promise<T> {
     signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
   });
   if (!response.ok) {
+    if (response.status === 403 || response.status === 429) {
+      skipGithubUntil = Date.now() + RATE_LIMIT_COOLDOWN_MS;
+      throw new Error('rate limited');
+    }
     throw new Error(`${url} failed: ${response.status} ${response.statusText}`);
   }
   return (await response.json()) as T;
@@ -297,23 +387,24 @@ async function fetchCalendarFromFallback(login: string): Promise<ContributionCal
 
 async function fetchCalendar(login: string): Promise<ContributionCalendar> {
   const token = githubToken();
-  if (token) {
+  if (token && !githubUnavailable()) {
     try {
       return await fetchCalendarFromGraphQL(login, token);
     } catch (error) {
-      console.warn('GitHub GraphQL contributions failed, using fallback.', error);
+      warn('GitHub GraphQL contributions failed, using fallback.', error);
     }
   }
 
   try {
     return await fetchCalendarFromFallback(login);
   } catch (error) {
-    console.warn('Contribution fallback failed.', error);
+    warn('Contribution fallback failed.', error);
     return emptyCalendar();
   }
 }
 
 async function fetchUser(login: string): Promise<GitHubUser> {
+  if (githubUnavailable()) return fallbackUser(login);
   try {
     const json = await fetchJson<RestUser>(`${REST_URL}/users/${login}`, {
       headers: headers(),
@@ -327,20 +418,93 @@ async function fetchUser(login: string): Promise<GitHubUser> {
       bio: json.bio ?? null,
     };
   } catch (error) {
-    console.warn('GitHub user fetch failed.', error);
+    warn('GitHub user fetch failed.', error);
     return fallbackUser(login);
   }
 }
 
-async function fetchRepo(config: (typeof DATA.github.featured)[number]): Promise<FeaturedRepo | null> {
+async function fetchCommitActivity(repo: string): Promise<number[]> {
+  if (githubUnavailable()) return [];
   try {
-    const json = await fetchJson<RestRepo>(`${REST_URL}/repos/${config.repo}`, {
+    const response = await fetch(`${REST_URL}/repos/${repo}/stats/commit_activity`, {
       headers: headers(),
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     });
+    if (!response.ok) {
+      if (response.status === 403 || response.status === 429) {
+        skipGithubUntil = Date.now() + RATE_LIMIT_COOLDOWN_MS;
+      }
+      return [];
+    }
+    const weeks = (await response.json()) as { total?: number }[];
+    if (!Array.isArray(weeks) || weeks.length === 0) return [];
+    return weeks.slice(-16).map((week) => week.total ?? 0);
+  } catch {
+    return [];
+  }
+}
+
+function ownerFromRepo(repo: string): string {
+  return repo.split('/')[0] ?? repo;
+}
+
+function resolveRepoIcon(
+  config: (typeof DATA.github.featured)[number],
+  fallback: string,
+): string {
+  return 'icon' in config ? config.icon : fallback;
+}
+
+function resolveRepoIconDark(config: (typeof DATA.github.featured)[number]): string | null {
+  return 'iconDark' in config ? config.iconDark : null;
+}
+
+function placeholderRepo(config: (typeof DATA.github.featured)[number]): FeaturedRepo {
+  const owner = ownerFromRepo(config.repo);
+  return {
+    fullName: config.repo,
+    name: config.repo.split('/')[1] ?? config.repo,
+    title: config.title,
+    description: config.description,
+    url: `https://github.com/${config.repo}`,
+    homepage: config.homepage ?? null,
+    stars: 0,
+    forks: 0,
+    language: null,
+    updatedAt: '',
+    iconUrl: resolveRepoIcon(config, `https://github.com/${owner}.png?size=80`),
+    iconUrlDark: resolveRepoIconDark(config),
+    activity: [],
+  };
+}
+
+export function sparklinePath(values: number[], width = 88, height = 28): string {
+  const points = values.length > 1 ? values : [0, 0];
+  const max = Math.max(...points, 1);
+  const step = (width - 2) / Math.max(points.length - 1, 1);
+  return points
+    .map((value, index) => {
+      const x = 1 + index * step;
+      const y = height - 2 - (value / max) * (height - 4);
+      return `${index === 0 ? 'M' : 'L'}${x.toFixed(1)} ${y.toFixed(1)}`;
+    })
+    .join(' ');
+}
+
+async function fetchRepo(config: (typeof DATA.github.featured)[number]): Promise<FeaturedRepo | null> {
+  if (githubUnavailable()) return placeholderRepo(config);
+  try {
+    const [json, activity] = await Promise.all([
+      fetchJson<RestRepo>(`${REST_URL}/repos/${config.repo}`, {
+        headers: headers(),
+      }),
+      fetchCommitActivity(config.repo),
+    ]);
     if (json.message || !json.html_url || !json.name) {
       throw new Error(json.message ?? `Missing repo ${config.repo}`);
     }
 
+    const owner = json.owner?.login ?? ownerFromRepo(config.repo);
     const homepage = config.homepage ?? (json.homepage && json.homepage.length > 0 ? json.homepage : null);
 
     return {
@@ -351,22 +515,19 @@ async function fetchRepo(config: (typeof DATA.github.featured)[number]): Promise
       url: json.html_url,
       homepage,
       stars: json.stargazers_count ?? 0,
+      forks: json.forks_count ?? 0,
       language: json.language ?? null,
       updatedAt: json.pushed_at ?? '',
+      iconUrl: resolveRepoIcon(
+        config,
+        json.owner?.avatar_url ?? `https://github.com/${owner}.png?size=80`,
+      ),
+      iconUrlDark: resolveRepoIconDark(config),
+      activity,
     };
   } catch (error) {
-    console.warn(`GitHub repo fetch failed for ${config.repo}.`, error);
-    return {
-      fullName: config.repo,
-      name: config.repo.split('/')[1] ?? config.repo,
-      title: config.title,
-      description: config.description,
-      url: `https://github.com/${config.repo}`,
-      homepage: config.homepage ?? null,
-      stars: 0,
-      language: null,
-      updatedAt: '',
-    };
+    warn(`GitHub repo fetch failed for ${config.repo}.`, error);
+    return placeholderRepo(config);
   }
 }
 
@@ -392,7 +553,29 @@ export function resolveAvatar(githubAvatar: string): string {
   );
 }
 
+function withCurrentIcons(data: GitHubPageData): GitHubPageData {
+  const byRepo = new Map(DATA.github.featured.map((config) => [config.repo, config]));
+  return {
+    ...data,
+    repos: data.repos.map((repo) => {
+      const config = byRepo.get(repo.fullName);
+      if (!config) return repo;
+      return {
+        ...repo,
+        iconUrl: resolveRepoIcon(config, repo.iconUrl),
+        iconUrlDark: resolveRepoIconDark(config),
+      };
+    }),
+  };
+}
+
 export async function loadGitHub(): Promise<GitHubPageData> {
+  const fresh = cachedPage();
+  if (fresh) return withCurrentIcons(fresh);
+
+  const stale = cachedPage(true);
+  if (githubUnavailable() && stale) return withCurrentIcons(stale);
+
   const login = DATA.github.username;
   const [user, calendar, repos] = await Promise.all([
     fetchUser(login),
@@ -400,11 +583,15 @@ export async function loadGitHub(): Promise<GitHubPageData> {
     Promise.all(DATA.github.featured.map((repo) => fetchRepo(repo))),
   ]);
 
-  return {
+  const data: GitHubPageData = {
     user,
     calendar,
     repos: repos.filter((repo): repo is FeaturedRepo => repo !== null),
     banner: resolveBanner(),
     avatar: resolveAvatar(user.avatarUrl),
   };
+
+  if (isDegraded(data)) return withCurrentIcons(stale ?? data);
+  writeDiskCache(data);
+  return withCurrentIcons(data);
 }

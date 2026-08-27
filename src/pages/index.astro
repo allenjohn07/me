@@ -45,11 +45,8 @@ const aboutHtml = DATA.summary
     <ContributionGraph calendar={github.calendar} publicRepos={github.user.publicRepos} />
 
     <section class="surface fade-in" style="animation-delay: 0.24s" id="projects">
-      <div class="surface-heading-row">
-        <h2>Projects</h2>
-        <p class="surface-kicker">{github.repos.length} from GitHub</p>
-      </div>
-      <div class="gh-grid">
+      <h2>Projects</h2>
+      <div class="gh-list">
         {github.repos.map((repo) => (
           <GitHubProjectCard repo={repo} />
         ))}

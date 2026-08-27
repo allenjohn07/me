@@ -1,6 +1,5 @@
 ---
-import Icon from './Icon.astro';
-import type { FeaturedRepo } from '@/lib/github';
+import { sparklinePath, type FeaturedRepo } from '@/lib/github';
 
 interface Props {
   repo: FeaturedRepo;
@@ -17,56 +16,87 @@ const LANGUAGE_COLORS: Record<string, string> = {
   Rust: '#dea584',
 };
 
+const SPARK_WIDTH = 88;
+const SPARK_HEIGHT = 28;
+
 const { repo } = Astro.props;
-
-const updated = repo.updatedAt
-  ? new Date(repo.updatedAt).toLocaleDateString('en-US', {
-      month: 'short',
-      year: 'numeric',
-    })
-  : null;
-
+const href = repo.homepage ?? repo.url;
 const languageColor = repo.language ? LANGUAGE_COLORS[repo.language] ?? '#95baff' : null;
+const path = sparklinePath(repo.activity, SPARK_WIDTH, SPARK_HEIGHT);
+const hasActivity = repo.activity.some((value) => value > 0);
+
+function formatCount(value: number): string {
+  if (value >= 1000) {
+    const compact = value / 1000;
+    const digits = compact >= 10 ? 0 : 1;
+    return `${compact.toFixed(digits).replace(/\.0$/, '')}k`;
+  }
+  return String(value);
+}
 ---
 
-<article class="gh-card">
-  <div class="gh-card-top">
-    <h3>
-      <a href={repo.url} target="_blank" rel="noopener noreferrer">{repo.title}</a>
-    </h3>
-    <span class="gh-stars" title={`${repo.stars} stars`}>
-      <svg viewBox="0 0 16 16" aria-hidden="true">
-        <path
-          fill="currentColor"
-          d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"
-        />
-      </svg>
-      {repo.stars}
-    </span>
-  </div>
-
-  <p class="gh-desc">{repo.description}</p>
-
-  <div class="gh-meta">
-    {repo.language && (
-      <span class="gh-lang">
-        <span class="gh-lang-dot" style={`background:${languageColor}`}></span>
-        {repo.language}
-      </span>
+<article class="gh-row">
+  <a
+    class:list={[
+      'gh-row-icon',
+      { 'is-compact': repo.iconUrl.includes('ohshift') },
+      { 'has-dark': Boolean(repo.iconUrlDark) },
+    ]}
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    tabindex="-1"
+  >
+    <img class="gh-icon-light" src={repo.iconUrl} alt="" width="48" height="48" />
+    {repo.iconUrlDark && (
+      <img class="gh-icon-dark" src={repo.iconUrlDark} alt="" width="48" height="48" />
     )}
-    {updated && <span>Updated {updated}</span>}
+  </a>
+
+  <div class="gh-row-body">
+    <h3>
+      <a href={href} target="_blank" rel="noopener noreferrer">{repo.title}</a>
+    </h3>
+    <p class="gh-desc">{repo.description}</p>
+    <div class="gh-meta">
+      {repo.language && (
+        <span class="gh-lang">
+          <span class="gh-lang-dot" style={`background:${languageColor}`}></span>
+          {repo.language}
+        </span>
+      )}
+      <span class="gh-stat" title={`${repo.stars} stars`}>
+        <svg viewBox="0 0 16 16" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"
+          />
+        </svg>
+        {formatCount(repo.stars)}
+      </span>
+      <span class="gh-stat" title={`${repo.forks} forks`}>
+        <svg viewBox="0 0 16 16" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V8.5h-1.5A2.25 2.25 0 0 1 3.5 6.25v-.878a2.25 2.25 0 1 1 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm6.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm-3 8.75a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z"
+          />
+        </svg>
+        {formatCount(repo.forks)}
+      </span>
+    </div>
   </div>
 
-  <div class="gh-links">
-    <a href={repo.url} target="_blank" rel="noopener noreferrer" class="project-link-new">
-      <Icon name="github" />
-      <span>Source</span>
-    </a>
-    {repo.homepage && (
-      <a href={repo.homepage} target="_blank" rel="noopener noreferrer" class="project-link-new">
-        <Icon name="globe" />
-        <span>Website</span>
-      </a>
+  <div class="gh-row-side">
+    {hasActivity && (
+      <svg
+        class="gh-spark"
+        viewBox={`0 0 ${SPARK_WIDTH} ${SPARK_HEIGHT}`}
+        width={SPARK_WIDTH}
+        height={SPARK_HEIGHT}
+        aria-hidden="true"
+      >
+        <path d={path} fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
     )}
   </div>
 </article>

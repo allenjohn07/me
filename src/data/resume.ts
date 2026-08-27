@@ -24,6 +24,7 @@ export const DATA = {
         repo: "cubingkeralaorg/cubingkerala",
         title: "Cubing Kerala",
         homepage: "https://cubingkerala.org/",
+        icon: "/projects/cubingkerala.png?v=7",
         description:
           "A platform for the Kerala cubing community to track competitions and rankings. Built with Next.js and TypeScript for better performance. It integrates with the World Cube Association's APIs and authentication to keep user and competition data up to date.",
       },
@@ -31,6 +32,7 @@ export const DATA = {
         repo: "Speed-Cubers-India/sci-frontend",
         title: "SpeedCubers India",
         homepage: "https://speedcubersindia.com/",
+        icon: "/projects/sci.png?v=2",
         description:
           "SpeedCubers India is now an officially recognized WCA regional organization in India. It's a platform for the Indian cubing community to track national rankings and live competition updates. I work on the web platform in a small team, directly under a WCA board member and a software engineer at Google.",
       },
@@ -38,6 +40,7 @@ export const DATA = {
         repo: "allenjohn07/OhShift",
         title: "OhShift",
         homepage: "https://ohshift.pages.dev",
+        icon: "/projects/ohshift.png?v=2",
         description:
           "A modern shift management platform designed to streamline workforce scheduling for small businesses. Type-safe Next.js frontend with a Bun, Elysia, and Prisma backend, Neon Postgres, and email alerts for live shift updates.",
       },
