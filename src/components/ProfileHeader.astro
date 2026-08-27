@@ -1,0 +1,67 @@
+---
+import Icon from './Icon.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import { DATA } from '@/data/resume';
+
+interface Props {
+  name: string;
+  login: string;
+  avatar: string;
+  banner: string;
+  githubUrl: string;
+}
+
+const { name, login, avatar, banner, githubUrl } = Astro.props;
+---
+
+<article class="surface profile-card fade-in">
+  <div class="profile-banner">
+    <img src={`${banner}?v=2`} alt="" width="1600" height="420" />
+  </div>
+
+  <div class="profile-body">
+    <div class="profile-avatar-wrap">
+      <img
+        class="profile-avatar"
+        src={`${avatar}?v=4`}
+        alt={`${name} profile photo`}
+        width="160"
+        height="160"
+      />
+    </div>
+
+    <div class="profile-identity">
+      <div>
+        <h1 class="profile-name">{name}</h1>
+        <p class="profile-meta">
+          <a href={githubUrl} target="_blank" rel="me noopener noreferrer">@{login}</a>
+          <span aria-hidden="true">·</span>
+          <span>{DATA.description}</span>
+        </p>
+      </div>
+
+      <div class="profile-actions">
+        <a
+          class="icon-btn"
+          href={DATA.contact.social.GitHub.url}
+          target="_blank"
+          rel="me noopener noreferrer"
+          aria-label="GitHub"
+        >
+          <Icon name="github" />
+        </a>
+        <a
+          class="icon-btn"
+          href={DATA.contact.social.LinkedIn.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="LinkedIn"
+        >
+          <Icon name="linkedin" />
+        </a>
+        <a class="text-btn" href="/blog/">Blog</a>
+        <ThemeToggle />
+      </div>
+    </div>
+  </div>
+</article>

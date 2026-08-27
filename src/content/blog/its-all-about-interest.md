@@ -6,7 +6,7 @@ tags: []
 draft: false
 ---
 
-They say potential is a baseline, but for me, it was always a moving target. Growing up in a middle-class family in Kochi - the "Queen of the Arabian Sea" - my teachers often told me I had potential. Looking back, I realize that potential was always tied to one thing: my interest. If I wasn't interested, I didn't perform.
+They say potential is a baseline, but for me, it was always a moving target. Growing up in a middle-class family in Kerala, India - my teachers often told me I had potential. Looking back, I realize that potential was always tied to one thing: my interest. If I wasn't interested, I didn't perform.
 
 I’m a quick learner, but I’ll be honest - I didn’t do well in my studies. I regret that now. I ended up with a Bachelor’s in Computer Applications (BSc Computer Applications) and a background in Higher Secondary that I still can’t quite justify. My parents were incredibly supportive, never forcing a specific path on me and giving me the freedom to study what I wanted. I just don't think I utilized that freedom well at the time.
 

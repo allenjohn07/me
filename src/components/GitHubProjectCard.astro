@@ -1,0 +1,72 @@
+---
+import Icon from './Icon.astro';
+import type { FeaturedRepo } from '@/lib/github';
+
+interface Props {
+  repo: FeaturedRepo;
+}
+
+const LANGUAGE_COLORS: Record<string, string> = {
+  TypeScript: '#3178c6',
+  JavaScript: '#f1e05a',
+  Astro: '#ff5d01',
+  CSS: '#563d7c',
+  HTML: '#e34c26',
+  Python: '#3572A5',
+  Go: '#00ADD8',
+  Rust: '#dea584',
+};
+
+const { repo } = Astro.props;
+
+const updated = repo.updatedAt
+  ? new Date(repo.updatedAt).toLocaleDateString('en-US', {
+      month: 'short',
+      year: 'numeric',
+    })
+  : null;
+
+const languageColor = repo.language ? LANGUAGE_COLORS[repo.language] ?? '#95baff' : null;
+---
+
+<article class="gh-card">
+  <div class="gh-card-top">
+    <h3>
+      <a href={repo.url} target="_blank" rel="noopener noreferrer">{repo.title}</a>
+    </h3>
+    <span class="gh-stars" title={`${repo.stars} stars`}>
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"
+        />
+      </svg>
+      {repo.stars}
+    </span>
+  </div>
+
+  <p class="gh-desc">{repo.description}</p>
+
+  <div class="gh-meta">
+    {repo.language && (
+      <span class="gh-lang">
+        <span class="gh-lang-dot" style={`background:${languageColor}`}></span>
+        {repo.language}
+      </span>
+    )}
+    {updated && <span>Updated {updated}</span>}
+  </div>
+
+  <div class="gh-links">
+    <a href={repo.url} target="_blank" rel="noopener noreferrer" class="project-link-new">
+      <Icon name="github" />
+      <span>Source</span>
+    </a>
+    {repo.homepage && (
+      <a href={repo.homepage} target="_blank" rel="noopener noreferrer" class="project-link-new">
+        <Icon name="globe" />
+        <span>Website</span>
+      </a>
+    )}
+  </div>
+</article>

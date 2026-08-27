@@ -1,0 +1,219 @@
+---
+import type { ContributionCalendar, ContributionDay, ContributionWeek } from '@/lib/github';
+
+interface Props {
+  calendar: ContributionCalendar;
+  publicRepos: number;
+}
+
+const { calendar, publicRepos } = Astro.props;
+
+const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function firstDay(week: ContributionWeek): ContributionDay | null {
+  for (const day of week.days) {
+    if (day) return day;
+  }
+  return null;
+}
+
+function monthLabels(weeks: ContributionWeek[]): (string | null)[] {
+  const labels: (string | null)[] = weeks.map(() => null);
+  let lastMonth = -1;
+  weeks.forEach((week, index) => {
+    const day = firstDay(week);
+    if (!day) return;
+    const month = new Date(`${day.date}T00:00:00Z`).getUTCMonth();
+    if (month !== lastMonth) {
+      labels[index] = monthNames[month] ?? null;
+      lastMonth = month;
+    }
+  });
+  return labels;
+}
+
+function formatDayCount(day: ContributionDay): string {
+  const when = new Date(`${day.date}T00:00:00Z`).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+  const noun = day.count === 1 ? 'contribution' : 'contributions';
+  return `${day.count} ${noun} on ${when}`;
+}
+
+function weekdayLabel(date: string): string {
+  return new Date(`${date}T00:00:00Z`).toLocaleDateString('en-US', {
+    weekday: 'short',
+    timeZone: 'UTC',
+  });
+}
+
+const yearlyWeeks = calendar.weeks;
+const yearlyMonths = monthLabels(yearlyWeeks);
+const monthlyWeeks = yearlyWeeks.slice(-5);
+const monthlyMonths = monthLabels(monthlyWeeks);
+const weeklyDays = yearlyWeeks
+  .flatMap((week) => week.days)
+  .filter((day): day is ContributionDay => day !== null)
+  .slice(-7);
+
+const hasData = yearlyWeeks.length > 0;
+const weekdayMarks = [
+  { index: 1, label: 'Mon' },
+  { index: 3, label: 'Wed' },
+  { index: 5, label: 'Fri' },
+];
+---
+
+<section class="surface activity-card fade-in" style="animation-delay: 0.18s">
+  <div class="activity-header">
+    <div>
+      <p class="eyebrow">Activity</p>
+      <p class="stat-lg">
+        <span>{calendar.total.toLocaleString('en-US')}</span>
+        <span class="stat-lg-label">contributions this year</span>
+      </p>
+    </div>
+    {hasData && (
+      <div class="segmented" role="tablist" aria-label="Activity range">
+        <button type="button" data-view="weekly" role="tab" aria-selected="false">Weekly</button>
+        <button type="button" data-view="monthly" role="tab" aria-selected="false">Monthly</button>
+        <button type="button" data-view="yearly" role="tab" aria-selected="true" class="is-active">Yearly</button>
+      </div>
+    )}
+  </div>
+
+  <div class="stat-pills">
+    <div class="stat-pill">
+      <strong>{calendar.currentStreak}</strong>
+      <span>Current streak</span>
+    </div>
+    <div class="stat-pill">
+      <strong>{calendar.longestStreak}</strong>
+      <span>Longest streak</span>
+    </div>
+    <div class="stat-pill">
+      <strong>{publicRepos}</strong>
+      <span>Public repos</span>
+    </div>
+  </div>
+
+  {hasData ? (
+    <div class="heatmap-switch">
+      <div class="heatmap-view is-active" data-view="yearly">
+        <div class="heatmap-scroll">
+          <div class="heatmap heatmap-year">
+            <div class="heatmap-weekdays" aria-hidden="true">
+              {Array.from({ length: 7 }, (_, index) => (
+                <span>{weekdayMarks.find((mark) => mark.index === index)?.label ?? ''}</span>
+              ))}
+            </div>
+            <div>
+              <div class="heatmap-months">
+                {yearlyMonths.map((label) => (
+                  <span>{label ?? ''}</span>
+                ))}
+              </div>
+              <div class="heatmap-weeks">
+                {yearlyWeeks.map((week) => (
+                  <div class="heatmap-week">
+                    {Array.from({ length: 7 }, (_, index) => {
+                      const day = week.days[index] ?? null;
+                      if (!day) return <span class="heatmap-cell is-pad" />;
+                      return (
+                        <span
+                          class="heatmap-cell"
+                          data-level={day.level}
+                          title={formatDayCount(day)}
+                        />
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="heatmap-view" data-view="monthly" hidden>
+        <div class="heatmap-scroll">
+          <div class="heatmap heatmap-month">
+            <div class="heatmap-weekdays" aria-hidden="true">
+              {Array.from({ length: 7 }, (_, index) => (
+                <span>{weekdayMarks.find((mark) => mark.index === index)?.label ?? ''}</span>
+              ))}
+            </div>
+            <div>
+              <div class="heatmap-months">
+                {monthlyMonths.map((label) => (
+                  <span>{label ?? ''}</span>
+                ))}
+              </div>
+              <div class="heatmap-weeks">
+                {monthlyWeeks.map((week) => (
+                  <div class="heatmap-week">
+                    {Array.from({ length: 7 }, (_, index) => {
+                      const day = week.days[index] ?? null;
+                      if (!day) return <span class="heatmap-cell is-pad" />;
+                      return (
+                        <span
+                          class="heatmap-cell"
+                          data-level={day.level}
+                          title={formatDayCount(day)}
+                        />
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="heatmap-view" data-view="weekly" hidden>
+        <div class="heatmap-week-row">
+          {weeklyDays.map((day) => (
+            <div class="heatmap-week-day">
+              <span
+                class="heatmap-cell"
+                data-level={day.level}
+                title={formatDayCount(day)}
+              >
+                {day.count}
+              </span>
+              <span>{weekdayLabel(day.date)}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  ) : (
+    <p class="empty-copy">GitHub activity will show here once contributions can be fetched.</p>
+  )}
+</section>
+
+<script>
+  const root = document.querySelector('.activity-card');
+  const tabs = root?.querySelectorAll<HTMLButtonElement>('.segmented [data-view]');
+  const views = root?.querySelectorAll<HTMLElement>('.heatmap-view');
+
+  tabs?.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const view = tab.dataset.view;
+      tabs.forEach((item) => {
+        const active = item === tab;
+        item.classList.toggle('is-active', active);
+        item.setAttribute('aria-selected', String(active));
+      });
+      views?.forEach((panel) => {
+        const match = panel.dataset.view === view;
+        panel.classList.toggle('is-active', match);
+        panel.hidden = !match;
+      });
+    });
+  });
+</script>
