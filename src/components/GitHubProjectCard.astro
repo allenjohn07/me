@@ -40,7 +40,6 @@ function formatCount(value: number): string {
     class:list={[
       'gh-row-icon',
       { 'is-compact': repo.iconUrl.includes('ohshift') },
-      { 'has-dark': Boolean(repo.iconUrlDark) },
     ]}
     href={href}
     target="_blank"
@@ -48,9 +47,6 @@ function formatCount(value: number): string {
     tabindex="-1"
   >
     <img class="gh-icon-light" src={repo.iconUrl} alt="" width="48" height="48" />
-    {repo.iconUrlDark && (
-      <img class="gh-icon-dark" src={repo.iconUrlDark} alt="" width="48" height="48" />
-    )}
   </a>
 
   <div class="gh-row-body">

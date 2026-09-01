@@ -1,6 +1,5 @@
 ---
 import Icon from './Icon.astro';
-import ThemeToggle from './ThemeToggle.astro';
 import { DATA } from '@/data/resume';
 
 interface Props {
@@ -60,7 +59,6 @@ const { name, login, avatar, banner, githubUrl } = Astro.props;
           <Icon name="linkedin" />
         </a>
         <a class="text-btn" href="/blog/">Blog</a>
-        <ThemeToggle />
       </div>
     </div>
   </div>

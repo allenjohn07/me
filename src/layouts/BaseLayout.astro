@@ -45,16 +45,6 @@ const pageDescription = description || DATA.description;
       href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
-
-    <!-- Theme script (inline, blocks render to prevent flash) -->
-    <script is:inline>
-      (function () {
-        const theme = localStorage.getItem('theme');
-        if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.classList.add('dark');
-        }
-      })();
-    </script>
   </head>
   <body>
     <div class="container">

@@ -175,19 +175,21 @@ const weekdayMarks = [
       </div>
 
       <div class="heatmap-view" data-view="weekly" hidden>
-        <div class="heatmap-week-row">
-          {weeklyDays.map((day) => (
-            <div class="heatmap-week-day">
-              <span
-                class="heatmap-cell"
-                data-level={day.level}
-                title={formatDayCount(day)}
-              >
-                {day.count}
-              </span>
-              <span>{weekdayLabel(day.date)}</span>
-            </div>
-          ))}
+        <div class="heatmap-scroll">
+          <div class="heatmap-week-row">
+            {weeklyDays.map((day) => (
+              <div class="heatmap-week-day">
+                <span
+                  class="heatmap-cell"
+                  data-level={day.level}
+                  title={formatDayCount(day)}
+                >
+                  {day.count}
+                </span>
+                <span>{weekdayLabel(day.date)}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
