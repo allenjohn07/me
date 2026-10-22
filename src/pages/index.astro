@@ -1,68 +1,55 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import ProfileHeader from '@/components/ProfileHeader.astro';
-import ContributionGraph from '@/components/ContributionGraph.astro';
-import GitHubProjectCard from '@/components/GitHubProjectCard.astro';
-import ResumeCard from '@/components/ResumeCard.astro';
 import { DATA } from '@/data/resume';
-import { loadGitHub } from '@/lib/github';
 
-const github = await loadGitHub();
-
-const aboutHtml = DATA.summary
-  .replace(/\n\n/g, '</p><p>')
-  .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+const aboutParagraphs = DATA.summary.split('\n\n');
 ---
 
 <BaseLayout>
-  <main class="home">
-    <ProfileHeader
-      name={github.user.name}
-      login={github.user.login}
-      avatar={github.avatar}
-      banner={github.banner}
-      githubUrl={github.user.url}
-    />
+  <main class="page">
+    <h1 class="name">{DATA.name}</h1>
+    <p class="tagline">{DATA.description}</p>
 
-    <section class="surface fade-in" style="animation-delay: 0.06s" id="about">
-      <h2>About</h2>
-      <div class="about-text" set:html={`<p>${aboutHtml}</p>`} />
-    </section>
+    <div class="about">
+      {aboutParagraphs.map((paragraph) => (
+        <p>{paragraph}</p>
+      ))}
+    </div>
 
-    <section class="surface fade-in" style="animation-delay: 0.12s" id="education">
-      <h2>Academic background</h2>
-      <div class="card-list">
+    <p class="links">
+      <a href={DATA.contact.social.GitHub.url} target="_blank" rel="noopener noreferrer">GitHub</a>
+      {' | '}
+      <a href={DATA.contact.social.LinkedIn.url} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      {' | '}
+      <a href="/blog/" target="_blank" rel="noopener noreferrer">Blog</a>
+    </p>
+
+    <section>
+      <h2>Education</h2>
+      <div class="plain-list">
         {DATA.education.map((edu) => (
-          <ResumeCard
-            title={edu.degree}
-            subtitle={edu.school}
-            period={`${edu.start} — ${edu.end}`}
-          />
+          <p>{edu.degree} - {edu.school}, {edu.end}</p>
         ))}
       </div>
     </section>
 
-    <ContributionGraph calendar={github.calendar} publicRepos={github.user.publicRepos} />
-
-    <section class="surface fade-in" style="animation-delay: 0.24s" id="projects">
+    <section>
       <h2>Projects</h2>
-      <div class="gh-list">
-        {github.repos.map((repo) => (
-          <GitHubProjectCard repo={repo} />
+      <div class="plain-list">
+        {DATA.projects.map((project) => (
+          <p>
+            <a href={project.url} target="_blank" rel="noopener noreferrer">{project.title}</a>
+            {' - '}{project.description}
+          </p>
         ))}
       </div>
     </section>
 
-    <section class="surface fade-in" style="animation-delay: 0.3s" id="cubing">
+    <section>
       <h2>Cubing</h2>
-      <div class="card-list">
+      <div class="plain-list">
         {DATA.cubing.map((item) => (
-          <ResumeCard
-            title={item.organization}
-            url={item.url}
-            subtitle={item.title}
-            period={`${item.start} — ${item.end}`}
-          />
+          <p>{item}</p>
         ))}
       </div>
     </section>

@@ -8,15 +8,12 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
 ---
 
 <BaseLayout title="Blog" description="Blog posts by Allen John">
-  <main class="home">
+  <main class="page">
+    <a href="/" class="back-link">← Home</a>
     {posts.length === 0 ? (
-      <section class="surface fade-in">
-        <a href="/" class="back-link">← Home</a>
-        <p class="empty-copy">No posts yet. Check back soon!</p>
-      </section>
+      <p class="empty-copy">No posts yet. Check back soon!</p>
     ) : (
-      <section class="surface fade-in">
-        <a href="/" class="back-link">← Home</a>
+      <section>
         <div class="blog-list">
           {posts.map((post) => (
             <article class="blog-card">
