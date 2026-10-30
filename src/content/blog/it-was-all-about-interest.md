@@ -14,7 +14,9 @@ As this is my first blog, let me introduce myself. I'm Allen, an international s
 
 I was a hardcore outdoor person into sports. I spent countless hours playing cricket and football in heavy sun and rain, because I loved it. With studies, I got decent marks even if I only studied in the last couple of days, but that wasn't enough to satisfy the potential me in any way.
 
-I took computer science in higher secondary and also in college, and I still don't know why I made that decision. I never had any interest in computers. I still regret that I didn't find my real interest early and pursue what I love. This doesn't mean I don't love computers or software development now. It's just me overthinking how I ended up loving them.
+Apart from sports, the Rubik's cube is where I found my first real interest. I used to practice a lot and attend Rubik's cube competitions. People in Kerala are still trying to beat my personal best of an 8.40 second average from 2022, or even my previous best of 9.15 from 2018, and only a handful of them have done it. I'm not bluffing or anything, it just shows how much practice I put into cubing those days. I don't practice that much nowadays, but I still play around whenever I find a cube in front of me. If I had found that kind of interest in programming or software development instead, I would have ended up somewhere else for sure.. sigh!!
+
+I took computer science in higher secondary and also in college, and I still don't know why I made that decision. I never had any interest in computers. I still regret that I didn't find my real interest for a career early and pursue what I love. This doesn't mean I don't love computers or software development now. It's just me overthinking how I ended up loving them.
 
 Like I said, I had no interest back then, and while I was in college I decided not to build a career in software development. So when my friends were looking for jobs, I started looking for my interest.
 
