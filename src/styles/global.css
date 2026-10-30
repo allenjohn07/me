@@ -19,6 +19,12 @@
 html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Hide the scrollbar but keep scrolling */
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
 }
 
 body {
@@ -126,6 +132,42 @@ section h2 {
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
+}
+
+.home-header {
+  align-items: center;
+}
+
+/* ── Human / AI toggle ── */
+.mode-toggle {
+  display: flex;
+  gap: 0.35rem;
+  flex-shrink: 0;
+  font-size: 0.95rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.mode-toggle a {
+  color: hsl(var(--muted-foreground));
+  text-decoration: none;
+}
+
+.mode-toggle a:hover,
+.mode-toggle a[aria-current='page'] {
+  color: hsl(var(--foreground));
+}
+
+.mode-toggle a[aria-current='page'] {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.llms-txt {
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 /* ── Back link ── */

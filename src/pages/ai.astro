@@ -1,0 +1,17 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import HomeHeader from '@/components/HomeHeader.astro';
+import { buildLlmsTxt } from '@/lib/llms';
+
+const llmsTxt = await buildLlmsTxt();
+---
+
+<BaseLayout title="For AI agents" description="Machine-readable summary of allenjohn.me">
+  <main class="page">
+    <HomeHeader mode="ai" />
+    <p class="tagline">
+      What AI agents read. Raw file at <a href="/llms.txt">/llms.txt</a>.
+    </p>
+    <pre class="llms-txt">{llmsTxt}</pre>
+  </main>
+</BaseLayout>

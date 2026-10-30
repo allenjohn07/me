@@ -1,0 +1,23 @@
+---
+import { DATA } from '@/data/resume';
+
+interface Props {
+  mode: 'human' | 'ai';
+}
+
+const { mode } = Astro.props;
+---
+
+<div class="page-header home-header">
+  <div class="name-row">
+    <span class="name-logo">
+      <img src="/avatar.png?v=4" alt="" width="1024" height="1024" />
+    </span>
+    <h1 class="name">{DATA.name}</h1>
+  </div>
+  <nav class="mode-toggle" aria-label="View as">
+    <a href="/" aria-current={mode === 'human' ? 'page' : undefined}>human</a>
+    <span aria-hidden="true">|</span>
+    <a href="/ai/" aria-current={mode === 'ai' ? 'page' : undefined}>ai</a>
+  </nav>
+</div>

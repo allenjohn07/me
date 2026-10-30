@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import HomeHeader from '@/components/HomeHeader.astro';
 import { DATA } from '@/data/resume';
 
 const aboutParagraphs = DATA.summary.split('\n\n');
@@ -7,12 +8,7 @@ const aboutParagraphs = DATA.summary.split('\n\n');
 
 <BaseLayout>
   <main class="page">
-    <div class="name-row">
-      <span class="name-logo">
-        <img src="/avatar.png?v=4" alt="" width="1024" height="1024" />
-      </span>
-      <h1 class="name">{DATA.name}</h1>
-    </div>
+    <HomeHeader mode="human" />
     <p class="tagline">{DATA.description}</p>
 
     <div class="about">
