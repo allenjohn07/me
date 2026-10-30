@@ -2,7 +2,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://allenjohn07.github.io',
+  site: 'https://allenjohn.me',
   integrations: [sitemap()],
   output: 'static',
   prefetch: {
