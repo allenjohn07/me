@@ -5,6 +5,10 @@ export default defineConfig({
   site: 'https://allenjohn07.github.io',
   integrations: [sitemap()],
   output: 'static',
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: 'hover',
+  },
   markdown: {
     shikiConfig: {
       theme: 'github-light',

@@ -7,7 +7,12 @@ const aboutParagraphs = DATA.summary.split('\n\n');
 
 <BaseLayout>
   <main class="page">
-    <h1 class="name">{DATA.name}</h1>
+    <div class="name-row">
+      <span class="name-logo">
+        <img src="/avatar.png?v=4" alt="" width="1024" height="1024" />
+      </span>
+      <h1 class="name">{DATA.name}</h1>
+    </div>
     <p class="tagline">{DATA.description}</p>
 
     <div class="about">
@@ -21,7 +26,7 @@ const aboutParagraphs = DATA.summary.split('\n\n');
       {' | '}
       <a href={DATA.contact.social.LinkedIn.url} target="_blank" rel="noopener noreferrer">LinkedIn</a>
       {' | '}
-      <a href="/blog/" target="_blank" rel="noopener noreferrer">Blog</a>
+      <a href="/blog/">Blog</a>
     </p>
 
     <section>

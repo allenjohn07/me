@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import BackLink from '@/components/BackLink.astro';
 import Badge from '@/components/Badge.astro';
 import { getCollection } from 'astro:content';
 
@@ -9,40 +10,43 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
 
 <BaseLayout title="Blog" description="Blog posts by Allen John">
   <main class="page">
-    <a href="/" class="back-link">← Home</a>
+    <div class="page-header">
+      <h1 class="name">Blog</h1>
+      <BackLink href="/" label="home" />
+    </div>
+
     {posts.length === 0 ? (
       <p class="empty-copy">No posts yet. Check back soon!</p>
     ) : (
-      <section>
-        <div class="blog-list">
-          {posts.map((post) => (
-            <article class="blog-card">
-              <div class="blog-card-top">
-                <h2>
-                  <a href={`/blog/${post.slug}/`}>{post.data.title}</a>
-                </h2>
-                <time class="blog-date" datetime={post.data.date.toISOString()}>
-                  {post.data.date.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                  })}
-                </time>
-              </div>
-              {post.data.description && (
-                <p class="blog-desc">{post.data.description}</p>
-              )}
-              {post.data.tags.length > 0 && (
-                <div class="badge-list blog-tags">
-                  {post.data.tags.map((tag) => (
-                    <Badge label={tag} />
-                  ))}
-                </div>
-              )}
-            </article>
-          ))}
-        </div>
-      </section>
+      <ul class="blog-list">
+        {posts.map((post) => (
+          <li>
+            <a href={`/blog/${post.slug}/`} class="blog-row">
+              <time class="blog-date" datetime={post.data.date.toISOString()}>
+                {post.data.date.toLocaleDateString('en-US', {
+                  timeZone: 'UTC',
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                })}
+              </time>
+              <span class="blog-row-body">
+                <span class="blog-row-title">{post.data.title}</span>
+                {post.data.description && (
+                  <span class="blog-desc">{post.data.description}</span>
+                )}
+                {post.data.tags.length > 0 && (
+                  <span class="badge-list blog-tags">
+                    {post.data.tags.map((tag) => (
+                      <Badge label={tag} />
+                    ))}
+                  </span>
+                )}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
     )}
   </main>
 </BaseLayout>

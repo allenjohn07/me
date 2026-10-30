@@ -1,8 +1,8 @@
 :root {
-  --background: 0 0% 100%;
+  --background: 40 33% 97%;
   --foreground: 0 0% 0%;
   --muted-foreground: 0 0% 35%;
-  --border: 0 0% 85%;
+  --border: 40 10% 84%;
   --link: 228 100% 39%;
 
   color-scheme: light;
@@ -60,6 +60,27 @@ img {
 }
 
 /* ── Home ── */
+.name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.name-logo {
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  overflow: hidden;
+}
+
+.name-logo img {
+  width: 100%;
+  height: 100%;
+  transform: scale(1.6);
+  /* Drop the image's white background onto the off-white page */
+  mix-blend-mode: multiply;
+}
+
 .name {
   font-weight: 700;
   font-size: 2rem;
@@ -99,36 +120,71 @@ section h2 {
   gap: 0.35rem;
 }
 
+/* ── Page header (title + back link) ── */
+.page-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
 /* ── Back link ── */
 .back-link {
-  display: inline-block;
+  flex-shrink: 0;
   font-size: 0.95rem;
+  text-decoration: none;
+  color: hsl(var(--muted-foreground));
+}
+
+.back-link:hover {
+  color: hsl(var(--foreground));
+}
+
+.back-link:focus-visible,
+.blog-row:focus-visible {
+  outline: 2px solid hsl(var(--link));
+  outline-offset: 3px;
 }
 
 /* ── Blog listing ── */
 .blog-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  margin-top: 1rem;
+  list-style: none;
 }
 
-.blog-card {
+.blog-list li + li {
+  border-top: 1px solid hsl(var(--border));
+}
+
+.blog-row {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: 1rem;
+  align-items: baseline;
+  padding: 0.85rem 0;
+  color: hsl(var(--foreground));
+  text-decoration: none;
+}
+
+.blog-row:hover {
+  color: hsl(var(--foreground));
+}
+
+.blog-row-body {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
 }
 
-.blog-card-top {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.75rem;
+.blog-row-title {
+  font-weight: 500;
+  font-size: 1.2rem;
+  line-height: 1.25;
+  text-underline-offset: 3px;
 }
 
-.blog-card h2 {
-  font-weight: 700;
-  font-size: 1.2rem;
+.blog-row:hover .blog-row-title {
+  color: hsl(var(--link));
+  text-decoration: underline;
 }
 
 .blog-date {
@@ -136,14 +192,16 @@ section h2 {
   font-size: 0.9rem;
   color: hsl(var(--muted-foreground));
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .blog-desc {
   color: hsl(var(--muted-foreground));
+  line-height: 1.3;
 }
 
 .blog-tags {
-  margin-top: 0.1rem;
+  margin-top: 0.3rem;
 }
 
 .badge-list {
@@ -182,8 +240,8 @@ section h2 {
 
 .blog-post-title {
   font-weight: 700;
-  font-size: 1.75rem;
-  line-height: 1.2;
+  font-size: 2rem;
+  line-height: 1.1;
 }
 
 /* ── Prose ── */
@@ -232,9 +290,8 @@ section h2 {
 }
 
 @media (max-width: 640px) {
-  .blog-card-top {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.1rem;
+  .blog-row {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
   }
 }

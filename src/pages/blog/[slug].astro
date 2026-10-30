@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import BackLink from '@/components/BackLink.astro';
 import Badge from '@/components/Badge.astro';
 import { getCollection } from 'astro:content';
 
@@ -17,12 +18,15 @@ const { Content } = await post.render();
 
 <BaseLayout title={post.data.title} description={post.data.description}>
   <main class="page">
-    <a href="/blog/" class="back-link">← All posts</a>
     <article class="blog-post">
       <header class="blog-post-header">
-        <h1 class="blog-post-title">{post.data.title}</h1>
+        <div class="page-header">
+          <h1 class="blog-post-title">{post.data.title}</h1>
+          <BackLink href="/blog/" label="all posts" />
+        </div>
         <p class="blog-date">
           {post.data.date.toLocaleDateString('en-US', {
+            timeZone: 'UTC',
             year: 'numeric',
             month: 'long',
             day: 'numeric',

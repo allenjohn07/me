@@ -39,6 +39,7 @@ export const DATA = {
     },
   ],
   cubing: [
+    "Ranked 6th in India for One-Handed, 2018",
     "WCA official speedcuber and organiser",
     "Cubing Kerala core member",
   ],
