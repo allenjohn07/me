@@ -28,8 +28,8 @@ export const DATA = {
       description: "Kerala Cubing community platform",
     },
     {
-      title: "OhShift",
-      url: "https://ohshift.pages.dev",
+      title: "OhShifts",
+      url: "https://ohshifts.com",
       description: "Shifting platform focusing small scale businesses",
     },
     {
