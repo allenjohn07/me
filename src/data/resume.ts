@@ -26,21 +26,30 @@ export const DATA = {
       title: "Cubing Kerala",
       url: "https://cubingkerala.com",
       description: "Kerala Cubing community platform",
+      image: "/projects/cubingkerala.webp",
     },
     {
       title: "OhShifts",
       url: "https://ohshifts.com",
       description: "Shifting platform focusing small scale businesses",
+      image: "/projects/ohshifts.webp",
     },
     {
       title: "SpeedCubers India",
       url: "https://speedcubersindia.com",
       description: "SCI community platform (Still in development)",
+      image: "/projects/speedcubersindia.webp",
+    },
+    {
+      title: "StudySync",
+      url: null,
+      description: "Class note-taking app with speech to text and analysis, all running locally",
+      image: "/projects/studysync.webp",
     },
   ],
   cubing: [
-    "Ranked 6th in India for One-Handed, 2018",
     "WCA official speedcuber and organiser",
+    "Ranked 6th in India for One-Handed, 2018",
     "Cubing Kerala core member",
   ],
 } as const;

@@ -138,6 +138,49 @@ section h2 {
   align-items: center;
 }
 
+/* ── Project hover card ── */
+.project-preview {
+  position: relative;
+}
+
+.project-placeholder-link {
+  cursor: pointer;
+}
+
+.project-card {
+  position: absolute;
+  bottom: calc(100% + 0.5rem);
+  left: 0;
+  z-index: 1;
+  width: min(20rem, calc(100vw - 3rem));
+  padding: 0.35rem;
+  background-color: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 6px 20px hsl(0 0% 0% / 0.12);
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.project-card img {
+  width: 100%;
+  height: auto;
+}
+
+.opens-below .project-card {
+  top: calc(100% + 0.5rem);
+  bottom: auto;
+}
+
+.project-preview:has(a:focus-visible) .project-card {
+  visibility: visible;
+}
+
+@media (hover: hover) {
+  .project-preview:hover .project-card {
+    visibility: visible;
+  }
+}
+
 /* ── Human / AI toggle ── */
 .mode-toggle {
   display: flex;

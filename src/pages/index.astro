@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import HomeHeader from '@/components/HomeHeader.astro';
+import ProjectPreview from '@/components/ProjectPreview.astro';
 import { DATA } from '@/data/resume';
 
 const aboutParagraphs = DATA.summary.split('\n\n');
@@ -39,7 +40,7 @@ const aboutParagraphs = DATA.summary.split('\n\n');
       <div class="plain-list">
         {DATA.projects.map((project) => (
           <p>
-            <a href={project.url} target="_blank" rel="noopener noreferrer">{project.title}</a>
+            <ProjectPreview title={project.title} url={project.url} image={project.image} />
             {' - '}{project.description}
           </p>
         ))}

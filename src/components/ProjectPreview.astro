@@ -1,0 +1,34 @@
+---
+interface Props {
+  title: string;
+  url: string | null;
+  image: string;
+}
+
+const { title, url, image } = Astro.props;
+---
+
+<span class="project-preview">
+  {url ? (
+    <a href={url} target="_blank" rel="noopener noreferrer">{title}</a>
+  ) : (
+    <a class="project-placeholder-link">{title}</a>
+  )}
+  <span class="project-card">
+    <img src={image} alt={`Screenshot of ${title}`} width="3024" height="1724" loading="lazy" decoding="async" />
+  </span>
+</span>
+
+<script>
+  // Open the card below the title when there isn't room above it in the window
+  function placeCard(event: Event) {
+    if (!(event.target instanceof Element)) return;
+    const preview = event.target.closest('.project-preview');
+    const card = preview?.querySelector<HTMLElement>('.project-card');
+    if (!preview || !card) return;
+    preview.classList.toggle('opens-below', preview.getBoundingClientRect().top < card.offsetHeight + 16);
+  }
+
+  document.addEventListener('pointerover', placeCard);
+  document.addEventListener('focusin', placeCard);
+</script>

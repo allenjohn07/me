@@ -27,7 +27,10 @@ export async function buildLlmsTxt(): Promise<string> {
     '',
     '## Projects',
     '',
-    ...DATA.projects.map((project) => `- [${project.title}](${project.url}): ${project.description}`),
+    ...DATA.projects.map((project) => {
+      const title = project.url ? `[${project.title}](${project.url})` : project.title;
+      return `- ${title}: ${project.description}`;
+    }),
     '',
     '## Cubing',
     '',
